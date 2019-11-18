@@ -108,8 +108,15 @@ const reduceApiCallBy = reduceState => (state = {}, action) => {
 };
 
 const alwaysOverride = (item, stage, response) => {
+  // 新旧data相同时，直接引用旧的data，避免不必要的页面渲染
   if (stage === SUCCESS || stage === FAILURE) {
-    return { ...item, response };
+    if (stage === SUCCESS) {
+      response.data = JSON.stringify(item.response.data) === JSON.stringify(response.data)
+      ? item.response.data
+      : response.data;
+    }
+
+    return {...item, response};
   }
 
   return item;
